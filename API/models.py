@@ -17,12 +17,11 @@ class Conversation(models.Model):
 
 class Message(models.Model):
     content = models.TextField()
-    response = models.BooleanField()
+    response = models.BooleanField(default=False)
     conversation = models.ForeignKey(Conversation,on_delete=models.CASCADE)
 
     def __str__(self):
         return self.content
-
 
 
 class Message_type(models.Model):

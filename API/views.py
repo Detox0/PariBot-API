@@ -57,16 +57,21 @@ def user_detail(request, pk):
 
 def all_user_messages(request, pk):
 
+    mensajes = []
+
     try:
-        message = Message.objects.get(conversation__user__id=pk)
+        messages = Message.objects.filter(conversation__user__id=pk)
     except:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = MessageSerializer(message)
-        return JsonResponse(serializer.data)
+        for message in messages:
+            mensajes.append(MessageSerializer(message).data)
 
+        #return JsonResponse(mensajes, safe=False)
+        return JsonResponse({'messages': mensajes})
 
+@csrf_exempt
 def receive_message(request):
     if request.method == 'POST':
 
