@@ -1,10 +1,9 @@
 from django.db import models
 
 
-class User(models.model):
+class User(models.Model):
 
     name = models.CharField(max_length=100)
     rut = models.CharField(max_length=12)
     mail = models.EmailField(max_length=100)
     age = models.IntegerField()
-    
