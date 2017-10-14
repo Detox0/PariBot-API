@@ -2,8 +2,9 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .models import User
-from .serializers import UserSerializer
+from .models import User,Message
+from .serializers import UserSerializer, MessageSerializer
+
 
 @csrf_exempt
 def user_list(request):
@@ -14,7 +15,7 @@ def user_list(request):
 
     if request.method == 'GET':
         users = User.objects.all()
-        serializer= UserSerializer(users, many = True)
+        serializer = UserSerializer(users, many=True)
 
         return JsonResponse(serializer.data, safe=False)
 
@@ -23,7 +24,7 @@ def user_list(request):
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return  JsonResponse(serializer.data, status=201)
+            return JsonResponse(serializer.data, status=201)
 
         return JsonResponse(serializer.errors, status=400)
 
@@ -53,6 +54,25 @@ def user_detail(request, pk):
         user.delete()
         return HttpResponse(status=204)
 
+
 def all_user_messages(request, pk):
 
-    return ''
+    try:
+        message = Message.objects.get(conversation__user__id=pk)
+    except:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = MessageSerializer(message)
+        return JsonResponse(serializer.data)
+
+
+def receive_message(request):
+    if request.method == 'POST':
+
+        data = JSONParser().parse(request)
+        serializer = MessageSerializer(data=data)
+
+        if (serializer.is_valid()):
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)

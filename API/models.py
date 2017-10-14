@@ -11,13 +11,18 @@ class User(models.Model):
 
 class Conversation(models.Model):
     dateTime = models.DateTimeField()
+    thread_id = models.IntegerField()
     user = models.ForeignKey(User,on_delete=models.CASCADE)
 
 
 class Message(models.Model):
-    data = models.TextField()
+    content = models.TextField()
     response = models.BooleanField()
     conversation = models.ForeignKey(Conversation,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content
+
 
 
 class Message_type(models.Model):
