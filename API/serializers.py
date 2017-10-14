@@ -1,7 +1,8 @@
 from API.models import User
 from rest_framework import serializers
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('name', 'rut', 'mail', 'age')
+        fields = ('id', 'name', 'rut', 'mail', 'age')

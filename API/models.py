@@ -9,7 +9,6 @@ class User(models.Model):
     age = models.IntegerField()
 
 
-
 class Conversation(models.Model):
     dateTime = models.DateTimeField()
     user = models.ForeignKey(User,on_delete=models.CASCADE)
