@@ -66,7 +66,7 @@ def all_user_messages(request, pk):
         serializer = MessageSerializer(message)
         return JsonResponse(serializer.data)
 
-
+@csrf_exempt
 def receive_message(request):
     if request.method == 'POST':
 
