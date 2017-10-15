@@ -5,7 +5,7 @@ from rest_framework import serializers
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'name', 'rut', 'mail', 'age')
+        fields = ('id', 'name', 'rut')
 
 
 class ConversationSerializer(serializers.ModelSerializer):

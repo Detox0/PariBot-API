@@ -25,7 +25,7 @@ SECRET_KEY = 'ie3ngxw2vv0^l+3o3l1lj+6e3ta0+x3@3=zls&hmn-q#_5bl1i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['paribot.pythonanywhere.com','127.0.0.1']
 
 
 # Application definition
