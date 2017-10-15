@@ -11,13 +11,13 @@ class UserSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Conversation
-        fields = ('id', 'thread_id', 'date_time', 'user')
+        fields = ('id', 'dateTime', 'user')
 
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ('id', 'content', 'response', 'conversation')
+        fields = ('id', 'content', 'response', 'conversation_id')
 
 
 class Message_typeSerializer(serializers.ModelSerializer):

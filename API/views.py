@@ -2,11 +2,14 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .models import User,Message
-from .serializers import UserSerializer, MessageSerializer
+from .models import *
+from .serializers import *
 import json
 import apiai
 
+
+CLIENT_ACCESS_TOKEN = 'e1dfd591f4af441cb799a4c198b044d5'
+ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
 
 @csrf_exempt
 def user_list(request):
@@ -82,13 +85,23 @@ def receive_message(request):
         data = JSONParser().parse(request)
 
         # save message
+        if "conversation_id" not in data:
+            # conversation_serializer = ConversationSerializer(data={"user": User.objects.get(pk=data["user_id"]) })
+            conversation_serializer = ConversationSerializer(data={"user": data["user_id"]})
+            if conversation_serializer.is_valid():
+                conversation_serializer.save()
+                print(conversation_serializer.data)
+                data["conversation_id"] = conversation_serializer.data["id"]
+            else:
+                return JsonResponse(status=400)
+
+
         serializer = MessageSerializer(data=data)
         if (serializer.is_valid()):
             serializer.save()
 
         # analyse data
-        CLIENT_ACCESS_TOKEN = 'e1dfd591f4af441cb799a4c198b044d5'
-        ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
+
         request = ai.text_request()
         request.lang = 'es'
         request.query = data['content']
@@ -101,13 +114,29 @@ def receive_message(request):
         action = result.get('action')
         actionIncomplete = result.get('actionIncomplete', False)
 
+        print(json.dumps(response, indent=2))
+
+        # Make response
+        paribot_response = {
+            "message": response['result']['fulfillment']["speech"],
+            "conversation_id": data["conversation_id"]
+        }
+
+
+        # perform actions
         if action is not None:
-            if action == "say_hi":
+            if action == "list_seguros":
                 parameters = result['parameters']
+                paribot_response["message"] = "Tus seguros contratados son: Seguro automotriz, Seguro de invalidez y SOAP"
 
-                if not actionIncomplete:
-                    print("hi!!!")
 
-        # print(json.dumps(response, indent=2))
 
-        return JsonResponse(response['result']['fulfillment'], status=201)
+        # save response
+        serializer = MessageSerializer(data={
+            "response": True,
+            "content": paribot_response["message"],
+            "conversation_id": data["conversation_id"]
+        })
+        if (serializer.is_valid()):
+            serializer.save()
+        return JsonResponse(paribot_response, status=201)
